@@ -52,11 +52,14 @@
   - Compare with random baseline
   - **Learning Goal**: Can simple rules beat random?
   - **Status**: Implemented with comprehensive documentation
-- [ ] Create first visualization
-  - Plot episode rewards over time
-  - Show moving average
-  - Save plots to outputs/
-  - **Learning Goal**: How to measure improvement
+- [x] Create first visualization
+  - Plot episode rewards over time ✅
+  - Show moving average ✅
+  - Save plots to outputs/ ✅
+  - **Learning Goal**: How to measure improvement ✅
+  - **Status**: Complete with flexible agent-agnostic system
+  - **Features**: Auto-discovery, specific agent analysis, side-by-side comparison
+  - **CLI**: `--visualize`, `--visualize agent_name`, `--visualize agent1,agent2`
 
 ## 📊 Phase 2: Data Collection & Analysis
 - [ ] Build experience collector

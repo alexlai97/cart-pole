@@ -33,12 +33,36 @@ def run_rule_based_agent(episodes: int, render: bool) -> None:
     compare_with_random(results)
 
 
-def run_visualization() -> None:
-    """Run visualization analysis."""
+def run_visualization(args: str = None) -> None:
+    """Run visualization analysis with flexible options.
+    
+    Args:
+        args: Visualization arguments - can be:
+            - None or 'all': Analyze all available agents
+            - 'agent_name': Analyze specific agent
+            - 'agent1,agent2': Compare multiple agents
+    """
     print("📊 Running visualization analysis...")
-    from visualization.plot_results import analyze_random_agent
-
-    analyze_random_agent()
+    
+    from visualization.plot_results import (
+        analyze_agent, 
+        analyze_all_agents, 
+        compare_agents,
+        discover_available_agents
+    )
+    
+    if args is None or args == "all":
+        # Analyze all available agents
+        analyze_all_agents()
+    elif "," in args:
+        # Compare multiple agents
+        agent_names = [name.strip() for name in args.split(",")]
+        compare_agents(agent_names)
+    else:
+        # Analyze specific agent
+        if not analyze_agent(args):
+            print(f"\n💡 Available agents: {', '.join(discover_available_agents())}")
+            print("💡 Run agents first with: python main.py --agent <agent_name> --episodes 100")
 
 
 def run_interactive_play(play_mode: str) -> None:
@@ -101,7 +125,9 @@ def main():
 Examples:
   python main.py --agent random --episodes 100    # Run random agent
   python main.py --agent random --render          # Run with visualization  
-  python main.py --visualize                      # Analyze saved results
+  python main.py --visualize                      # Analyze all agents
+  python main.py --visualize random              # Analyze specific agent
+  python main.py --visualize random,rule_based   # Compare agents
   python main.py --explore                        # Explore environment
   python main.py --play simple                    # Play turn-based (think each move)
   python main.py --play realtime                  # Play real-time (A/D keys)
@@ -127,8 +153,9 @@ Examples:
     )
     parser.add_argument(
         "--visualize",
-        action="store_true",
-        help="Run visualization analysis of saved results",
+        nargs="?",
+        const="all",
+        help="Run visualization analysis (no arg=all agents, agent_name=specific, 'agent1,agent2'=compare)",
     )
     parser.add_argument(
         "--explore",
@@ -153,8 +180,8 @@ Examples:
 
     if args.quick:
         run_quick_menu()
-    elif args.visualize:
-        run_visualization()
+    elif args.visualize is not None:
+        run_visualization(args.visualize)
     elif args.explore:
         print("🔍 Launching environment exploration...")
         import os

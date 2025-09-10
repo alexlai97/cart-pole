@@ -186,16 +186,38 @@ def plot_performance_summary(results: dict[str, Any], save_path: str = None) -> 
     plt.show()
 
 
-def analyze_random_agent() -> None:
-    """Analyze the random agent results and create visualizations."""
-    print("📊 Analyzing Random Agent Performance...")
+def discover_available_agents() -> list[str]:
+    """Discover all available agent result files."""
+    results_dir = Path("outputs/results")
+    if not results_dir.exists():
+        return []
+    
+    agent_names = []
+    for file_path in results_dir.glob("*_results.json"):
+        # Extract agent name from filename (remove _results.json suffix)
+        agent_name = file_path.stem.replace("_results", "")
+        agent_names.append(agent_name)
+    
+    return sorted(agent_names)
 
-    results_file = "outputs/results/random_agent_results.json"
+
+def analyze_agent(agent_name: str) -> bool:
+    """Analyze a specific agent and create visualizations.
+    
+    Args:
+        agent_name: Name of the agent (e.g., 'random', 'rule_based')
+        
+    Returns:
+        True if analysis was successful, False otherwise
+    """
+    print(f"📊 Analyzing {agent_name.title().replace('_', ' ')} Agent Performance...")
+
+    results_file = f"outputs/results/{agent_name}_results.json"
 
     if not Path(results_file).exists():
         print(f"❌ Results file not found: {results_file}")
-        print("Run 'python agents/random_agent.py' first to generate results.")
-        return
+        print(f"Run the {agent_name} agent first to generate results.")
+        return False
 
     # Load results
     results = load_agent_results(results_file)
@@ -207,17 +229,202 @@ def analyze_random_agent() -> None:
     # Generate plots
     plot_episode_rewards(
         results,
-        save_path=str(plots_dir / "random_agent_episodes.png")
+        save_path=str(plots_dir / f"{agent_name}_episodes.png")
     )
 
     plot_performance_summary(
         results,
-        save_path=str(plots_dir / "random_agent_summary.png")
+        save_path=str(plots_dir / f"{agent_name}_summary.png")
     )
 
-    print("\n✅ Random agent analysis complete!")
+    print(f"\n✅ {agent_name.title().replace('_', ' ')} agent analysis complete!")
     print(f"📁 Plots saved in {plots_dir}/")
+    return True
+
+
+def analyze_all_agents() -> None:
+    """Analyze all available agents."""
+    available_agents = discover_available_agents()
+    
+    if not available_agents:
+        print("❌ No agent results found in outputs/results/")
+        print("Run some agents first to generate results.")
+        return
+        
+    print(f"📊 Found {len(available_agents)} agent(s): {', '.join(available_agents)}")
+    print("\n" + "="*60)
+    
+    success_count = 0
+    for agent_name in available_agents:
+        print()
+        if analyze_agent(agent_name):
+            success_count += 1
+        print("="*60)
+    
+    print(f"\n🎉 Completed analysis for {success_count}/{len(available_agents)} agents!")
+
+
+def compare_agents(agent_names: list[str]) -> None:
+    """Compare multiple agents side-by-side.
+    
+    Args:
+        agent_names: List of agent names to compare
+    """
+    print(f"📊 Comparing {len(agent_names)} agents: {', '.join(agent_names)}")
+    
+    # Load all agent results
+    agent_results = {}
+    for agent_name in agent_names:
+        results_file = f"outputs/results/{agent_name}_results.json"
+        if Path(results_file).exists():
+            agent_results[agent_name] = load_agent_results(results_file)
+        else:
+            print(f"⚠️  Skipping {agent_name} - results file not found")
+    
+    if not agent_results:
+        print("❌ No valid agent results found for comparison")
+        return
+    
+    # Create comparison plot
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
+    colors = ['steelblue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray']
+    
+    # Plot 1: Episode rewards comparison
+    for i, (agent_name, results) in enumerate(agent_results.items()):
+        episode_rewards = results["episode_rewards"]
+        color = colors[i % len(colors)]
+        
+        # Plot raw episodes with transparency
+        ax1.plot(episode_rewards, alpha=0.4, color=color, linewidth=0.8)
+        
+        # Add rolling average
+        window = min(20, len(episode_rewards) // 5)
+        if window > 1:
+            rolling_avg = np.convolve(
+                episode_rewards, np.ones(window)/window, mode='valid'
+            )
+            ax1.plot(
+                range(window-1, len(episode_rewards)), rolling_avg,
+                color=color, linewidth=2, label=f'{agent_name} (avg: {results["mean_reward"]:.1f})'
+            )
+        else:
+            ax1.plot(episode_rewards, color=color, linewidth=1, 
+                    label=f'{agent_name} (avg: {results["mean_reward"]:.1f})')
+    
+    ax1.axhline(y=195, color='black', linestyle='--', alpha=0.7, label='Solved (195)')
+    ax1.set_xlabel('Episode')
+    ax1.set_ylabel('Episode Reward (Steps)')
+    ax1.set_title('Episode Rewards Comparison')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    
+    # Plot 2: Performance statistics comparison
+    agent_names_list = list(agent_results.keys())
+    means = [agent_results[name]["mean_reward"] for name in agent_names_list]
+    stds = [agent_results[name]["std_reward"] for name in agent_names_list]
+    
+    x_pos = np.arange(len(agent_names_list))
+    bars = ax2.bar(x_pos, means, yerr=stds, capsize=5, 
+                   color=[colors[i % len(colors)] for i in range(len(agent_names_list))],
+                   alpha=0.7)
+    
+    ax2.axhline(y=195, color='black', linestyle='--', alpha=0.7, label='Solved (195)')
+    ax2.set_xlabel('Agent')
+    ax2.set_ylabel('Mean Reward ± Std Dev')
+    ax2.set_title('Performance Comparison')
+    ax2.set_xticks(x_pos)
+    ax2.set_xticklabels([name.replace('_', ' ').title() for name in agent_names_list], rotation=45)
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+    
+    # Add value labels on bars
+    for i, (bar, mean, std) in enumerate(zip(bars, means, stds)):
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height + std + 2,
+                f'{mean:.1f}', ha='center', va='bottom', fontweight='bold')
+    
+    # Plot 3: Reward distributions
+    for i, (agent_name, results) in enumerate(agent_results.items()):
+        episode_rewards = results["episode_rewards"]
+        color = colors[i % len(colors)]
+        ax3.hist(episode_rewards, bins=15, alpha=0.6, color=color, 
+                label=f'{agent_name}', density=True)
+    
+    ax3.axvline(x=195, color='black', linestyle='--', alpha=0.7, label='Solved (195)')
+    ax3.set_xlabel('Episode Reward (Steps)')
+    ax3.set_ylabel('Density')
+    ax3.set_title('Reward Distribution Comparison')
+    ax3.legend()
+    ax3.grid(True, alpha=0.3)
+    
+    # Plot 4: Success rates
+    success_rates = []
+    for agent_name in agent_names_list:
+        results = agent_results[agent_name]
+        episode_rewards = np.array(results["episode_rewards"])
+        success_rate = np.mean(episode_rewards >= 195) * 100
+        success_rates.append(success_rate)
+    
+    bars = ax4.bar(x_pos, success_rates,
+                   color=[colors[i % len(colors)] for i in range(len(agent_names_list))],
+                   alpha=0.7)
+    
+    ax4.set_xlabel('Agent')
+    ax4.set_ylabel('Success Rate (%)')
+    ax4.set_title('Success Rate Comparison (≥195 steps)')
+    ax4.set_xticks(x_pos)
+    ax4.set_xticklabels([name.replace('_', ' ').title() for name in agent_names_list], rotation=45)
+    ax4.set_ylim(0, max(100, max(success_rates) * 1.1))
+    ax4.grid(True, alpha=0.3)
+    
+    # Add percentage labels on bars
+    for bar, rate in zip(bars, success_rates):
+        height = bar.get_height()
+        ax4.text(bar.get_x() + bar.get_width()/2., height + 1,
+                f'{rate:.1f}%', ha='center', va='bottom', fontweight='bold')
+    
+    plt.suptitle(f'Agent Comparison: {", ".join([name.replace("_", " ").title() for name in agent_names_list])}',
+                fontsize=16, y=0.98)
+    plt.tight_layout()
+    
+    # Save comparison plot
+    plots_dir = Path("outputs/plots")
+    plots_dir.mkdir(exist_ok=True)
+    comparison_filename = "_vs_".join(agent_names) + "_comparison.png"
+    save_path = plots_dir / comparison_filename
+    
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    print(f"📊 Comparison plot saved to {save_path}")
+    
+    plt.show()
+    
+    # Print summary statistics
+    print("\n📈 Performance Summary:")
+    print("-" * 60)
+    for agent_name in sorted(agent_results.keys(), 
+                           key=lambda x: agent_results[x]["mean_reward"], 
+                           reverse=True):
+        results = agent_results[agent_name]
+        episode_rewards = np.array(results["episode_rewards"])
+        success_rate = np.mean(episode_rewards >= 195) * 100
+        print(f"{agent_name.replace('_', ' ').title():>15}: "
+              f"{results['mean_reward']:>6.1f} ± {results['std_reward']:>5.1f} steps "
+              f"(success: {success_rate:>5.1f}%)")
+    
+    print(f"\n✅ Comparison complete! {len(agent_results)} agents analyzed.")
+
+
+def analyze_random_agent() -> None:
+    """Legacy function for backward compatibility."""
+    analyze_agent("random")
 
 
 if __name__ == "__main__":
-    analyze_random_agent()
+    # Show available agents and analyze all by default
+    available_agents = discover_available_agents()
+    
+    if not available_agents:
+        print("❌ No agent results found!")
+        print("Run some agents first: python main.py --agent random --episodes 100")
+    else:
+        analyze_all_agents()

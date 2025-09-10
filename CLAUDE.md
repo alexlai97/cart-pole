@@ -64,8 +64,8 @@ cart-pole/
 ## Current Status
 ✅ **Environment Setup Complete** - uv, dependencies, linting configured
 ✅ **Random Agent Baseline** - 23.3 ± 11.5 steps average performance
-✅ **Rule-Based Agent** - Heuristic approach implemented
-✅ **Visualization System** - Performance plotting and analysis
+✅ **Rule-Based Agent** - Heuristic approach implemented (43.8 ± 8.7 steps, 88% improvement!)
+✅ **Flexible Visualization System** - Agent-agnostic plotting with comparison capabilities
 ✅ **Interactive Play** - Real-time and turn-based gameplay
 ✅ **Clean Codebase** - Reorganized, no redundant scripts
 ✅ **Comprehensive Documentation** - Beginner-friendly guides for all agents
@@ -97,12 +97,14 @@ Following the TODO.md structure:
 7. **PPO** - State-of-the-art policy optimization
 
 ## Visualization Priorities
-1. ✅ **Training curves** - Episode rewards over time
-2. ✅ **Performance analysis** - Statistics and distributions
-3. **Q-value heatmaps** - For Q-learning visualization
-4. **Network weights evolution** - Deep learning visualization
-5. **Policy distributions** - How action probabilities change
-6. **Real-time dashboard** - Interactive training monitor
+1. ✅ **Training curves** - Episode rewards over time with moving averages
+2. ✅ **Performance analysis** - Statistics, distributions, success rates
+3. ✅ **Agent comparison** - Side-by-side performance visualization
+4. ✅ **Flexible CLI** - `--visualize`, `--visualize agent_name`, `--visualize agent1,agent2`
+5. **Q-value heatmaps** - For Q-learning visualization
+6. **Network weights evolution** - Deep learning visualization
+7. **Policy distributions** - How action probabilities change
+8. **Real-time dashboard** - Interactive training monitor
 
 ## Interactive Testing Goals
 - **Agent Teasing Feature** - Apply disturbances to trained agents

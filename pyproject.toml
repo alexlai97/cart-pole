@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Learning reinforcement learning with Cart-Pole environment"
 authors = [{name = "Learning Project"}]
 license = {text = "MIT"}
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 dependencies = [
     "gymnasium[classic-control]",
     "numpy",
@@ -31,7 +31,7 @@ deep = [
 
 [tool.ruff]
 line-length = 88
-target-version = "py310"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = [
@@ -56,4 +56,4 @@ include = ["cart_pole", "agents", "visualization", "utils"]
 exclude = [".venv"]
 reportMissingImports = true
 reportMissingTypeStubs = false
-pythonVersion = "3.10"
+pythonVersion = "3.13"
