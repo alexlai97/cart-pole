@@ -19,9 +19,22 @@ This is a learning project to understand reinforcement learning through hands-on
 ## Clean Project Structure
 ```
 cart-pole/
+├── .claude/
+│   └── agents/                  # ✅ Custom Claude Code subagents
+│       ├── rl-teacher.md        # ✅ RL concept explanations (opus, yellow)
+│       ├── agent-documenter.md  # ✅ Documentation creation (sonnet, blue)
+│       ├── viz-explainer.md     # ✅ Visualization explanations (sonnet, green)
+│       └── code-analyzer.md     # ✅ Code analysis (sonnet, purple)
 ├── agents/
 │   ├── __init__.py
-│   └── random_agent.py          # ✅ Baseline agent (23.3 steps avg)
+│   ├── random_agent.py          # ✅ Baseline agent (23.3 steps avg)
+│   └── rule_based_agent.py      # ✅ Heuristic approach
+├── docs/
+│   └── agents/                  # ✅ Comprehensive beginner documentation
+│       ├── README.md            # ✅ Agent overview & learning path
+│       ├── random-agent.md      # ✅ Random baseline deep dive
+│       ├── rule-based-agent.md  # ✅ Heuristic strategy explanation
+│       └── rewards-and-costs.md # ✅ Cart-Pole reward system guide
 ├── utils/
 │   ├── __init__.py
 │   ├── interactive_play.py      # ✅ Consolidated play functionality
@@ -51,9 +64,12 @@ cart-pole/
 ## Current Status
 ✅ **Environment Setup Complete** - uv, dependencies, linting configured
 ✅ **Random Agent Baseline** - 23.3 ± 11.5 steps average performance
+✅ **Rule-Based Agent** - Heuristic approach implemented
 ✅ **Visualization System** - Performance plotting and analysis
 ✅ **Interactive Play** - Real-time and turn-based gameplay
 ✅ **Clean Codebase** - Reorganized, no redundant scripts
+✅ **Comprehensive Documentation** - Beginner-friendly guides for all agents
+✅ **Claude Code Subagents** - Specialized AI assistants for education
 
 ## Available Commands
 ```bash
@@ -73,7 +89,7 @@ pyright                                         # Type checking
 ## Algorithm Implementation Order
 Following the TODO.md structure:
 1. ✅ **Random Agent** - Baseline established (23.3 steps)
-2. **Rule-based Agent** - Simple heuristics (beat random)
+2. ✅ **Rule-based Agent** - Simple heuristics (implemented, documentation complete)
 3. **Q-Learning** - Tabular reinforcement learning
 4. **DQN** - Deep learning begins
 5. **REINFORCE** - Policy gradient methods
@@ -94,6 +110,28 @@ Following the TODO.md structure:
 - **Algorithm Comparison** - Side-by-side robustness testing
 - **Recovery Analysis** - Measure adaptation to perturbations
 
+## Educational Documentation System
+✅ **Comprehensive Agent Guides** - Each algorithm has detailed beginner documentation
+✅ **Learning Path Structure** - Clear progression from simple to complex
+✅ **Visual Learning Focus** - Descriptions of what learners will "see"
+✅ **Real-World Analogies** - Complex concepts explained through familiar examples
+✅ **Performance Baselines** - All agents compared to random (23.3 steps)
+✅ **Code Deep Dives** - Annotated walkthroughs of implementations
+
+## Claude Code Subagents
+✅ **rl-teacher** (opus, yellow) - Explains RL concepts in beginner-friendly ways
+✅ **agent-documenter** (sonnet, blue) - Creates consistent documentation for new agents
+✅ **viz-explainer** (sonnet, green) - Interprets training curves and visualizations
+✅ **code-analyzer** (sonnet, purple) - Analyzes implementations for key concepts
+
+### Using Subagents
+```bash
+# Task: "Explain Q-learning to a beginner" → rl-teacher
+# Task: "Document the new DQN agent" → agent-documenter  
+# Task: "Explain this training curve" → viz-explainer
+# Task: "Analyze the policy gradient code" → code-analyzer
+```
+
 ## Important Reminders
 - The user is on a Mac mini with fish shell
 - The user wants to LEARN - explain concepts as we implement
@@ -101,6 +139,7 @@ Following the TODO.md structure:
 - Visualizations are KEY - the user wants to see networks evolving
 - Work on one TODO item at a time unless asked otherwise
 - Interactive functionality needs real terminal (input issues in headless mode)
+- **Use subagents** for educational tasks - they maintain consistent beginner-friendly tone
 
 ## Baseline Performance
 - **Random Agent**: 23.3 ± 11.5 steps (0% success rate)
