@@ -143,4 +143,4 @@ outputs/
 
 # Temporary files
 *.tmp
-*.temp
+*.temp.serena/
