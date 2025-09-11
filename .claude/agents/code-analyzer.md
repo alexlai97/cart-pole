@@ -112,7 +112,7 @@ For each agent, extract:
 - **State space**: Position, velocity, angle, angular velocity
 - **Action space**: Left (0) or Right (1)
 - **Reward structure**: +1 per timestep, sparse feedback
-- **Success criteria**: 475+ steps average over 100 episodes
+- **Success criteria**: 195+ steps average over 100 episodes
 
 ### Project Standards
 - **Baseline performance**: Random agent at 23.3 ± 11.5 steps

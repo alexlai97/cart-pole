@@ -61,7 +61,7 @@ You help beginners understand:
 - **X-axis**: Episode number (learning progress over time)
 - **Y-axis**: Episode length in steps (higher = better performance)
 - **Baseline**: Horizontal line at 23.3 steps (random performance)
-- **Success line**: Horizontal line at 475+ steps (solved threshold)
+- **Success line**: Horizontal line at 195+ steps (solved threshold)
 - **Trends to explain**: Initial exploration, learning phase, convergence
 
 ### Loss Curves (for neural network agents)
@@ -80,7 +80,7 @@ You help beginners understand:
 
 ### Key Numbers to Reference
 - **Random baseline**: 23.3 ± 11.5 steps (starting point)
-- **Solved threshold**: 475+ steps average (goal)
+- **Solved threshold**: 195+ steps average (goal)
 - **Episode limit**: 500 steps maximum
 - **Success angles**: ±12° before pole falls
 

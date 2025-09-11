@@ -65,16 +65,14 @@ def run_dqn_agent(episodes: int, render: bool, visualize_network: bool = False, 
     
     results = train_dqn_agent(episodes=episodes, render=render, visualize=visualize_network, device=device)
     
-    # Show performance comparison
-    print(f"\n🎯 DQN vs All Baselines:")
-    print(f"   Random Agent:     23.3 ± 11.5 steps")
-    print(f"   Rule-Based Agent: 43.8 ±  8.7 steps")
-    print(f"   Q-Learning Agent: 28.5 ± 12.8 steps")
-    print(f"   DQN Agent:       {results['mean_reward']:5.1f} ± {results['std_reward']:5.1f} steps")
+    # Show performance comparison using centralized constants
+    from utils.constants import format_baseline_comparison, calculate_improvement
     
-    improvement_over_random = ((results['mean_reward'] - 23.3) / 23.3) * 100
-    improvement_over_rule = ((results['mean_reward'] - 43.8) / 43.8) * 100  
-    improvement_over_qlearning = ((results['mean_reward'] - 28.5) / 28.5) * 100
+    print(format_baseline_comparison('dqn', results['mean_reward'], results['std_reward']))
+    
+    improvement_over_random = calculate_improvement(results['mean_reward'], 'random')
+    improvement_over_rule = calculate_improvement(results['mean_reward'], 'rule_based')
+    improvement_over_qlearning = calculate_improvement(results['mean_reward'], 'q_learning')
     
     print(f"\n📈 Improvements:")
     print(f"   vs Random:     {improvement_over_random:+.1f}%")

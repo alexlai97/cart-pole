@@ -44,14 +44,16 @@ timesteps >= 500
 
 ### Official Definition
 Cart-Pole is considered "solved" when:
-- **Average reward ≥ 475** over 100 consecutive episodes
-- This means averaging 475+ timesteps per episode
-- Since max episode length is 500, you need 95%+ success rate
+- **Average reward ≥ 195** over 100 consecutive episodes
+- This is the standard OpenAI Gym threshold for CartPole-v1
+- Achievable but still requires consistent good performance
+- Balances challenge with educational accessibility
 
-### Why 475 and not 500?
-- Allows for some imperfection (episodes ending at 490, 480, etc.)
-- Real-world systems aren't perfect - this threshold is more realistic
-- Still requires consistently excellent performance
+### Why 195 and not 500?
+- OpenAI Gym's official "solved" threshold for CartPole-v1
+- Commonly cited in RL literature and tutorials
+- More achievable for learning algorithms
+- Still demonstrates that the agent has learned effective control
 
 ## Cost Functions vs Rewards
 

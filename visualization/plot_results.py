@@ -299,11 +299,23 @@ def compare_agents(agent_names: list[str]) -> None:
     # Load all agent results
     agent_results = {}
     for agent_name in agent_names:
-        results_file = f"outputs/results/{agent_name}_results.json"
-        if Path(results_file).exists():
+        # Try multiple filename patterns for backward compatibility
+        possible_files = [
+            f"outputs/results/{agent_name}_results.json",
+            f"outputs/results/{agent_name}_agent_results.json"
+        ]
+        
+        results_file = None
+        for file_path in possible_files:
+            if Path(file_path).exists():
+                results_file = file_path
+                break
+        
+        if results_file:
             agent_results[agent_name] = load_agent_results(results_file)
         else:
             print(f"⚠️  Skipping {agent_name} - results file not found")
+            print(f"   Looked for: {', '.join(possible_files)}")
     
     if not agent_results:
         print("❌ No valid agent results found for comparison")

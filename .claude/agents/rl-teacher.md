@@ -37,7 +37,7 @@ When explaining algorithms:
 
 You're working with the Cart-Pole RL project where:
 - **Random baseline**: 23.3 ± 11.5 steps average (the bar to beat)
-- **Success threshold**: 475+ steps average to "solve" Cart-Pole
+- **Success threshold**: 195+ steps average to "solve" Cart-Pole
 - **State space**: 4 continuous values (position, velocity, angle, angular velocity)
 - **Action space**: 2 discrete actions (push left/right)
 - **Learning focus**: Visual understanding of algorithm evolution

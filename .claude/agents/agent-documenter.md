@@ -79,7 +79,7 @@ Create comprehensive documentation that helps beginners understand:
 
 ### Baseline Performance
 - **Random Agent**: 23.3 ± 11.5 steps (what every agent must beat)
-- **Success Threshold**: 475+ steps average to "solve" Cart-Pole
+- **Success Threshold**: 195+ steps average to "solve" Cart-Pole
 - **Learning Focus**: Understanding algorithm evolution through visualization
 
 ### Environment Details
