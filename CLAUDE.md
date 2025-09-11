@@ -66,6 +66,7 @@ cart-pole/
 ✅ **Random Agent Baseline** - 23.3 ± 11.5 steps average performance
 ✅ **Rule-Based Agent** - Heuristic approach implemented (43.8 ± 8.7 steps, 88% improvement!)
 ✅ **Flexible Visualization System** - Agent-agnostic plotting with comparison capabilities
+✅ **State Space Analyzer** - Deep dive into environment dynamics for Q-learning prep
 ✅ **Interactive Play** - Real-time and turn-based gameplay
 ✅ **Clean Codebase** - Reorganized, no redundant scripts
 ✅ **Comprehensive Documentation** - Beginner-friendly guides for all agents
@@ -73,17 +74,24 @@ cart-pole/
 
 ## Available Commands
 ```bash
+# CRITICAL: Always use the project's virtual environment
+source .venv/bin/activate                       # MUST activate first!
+
 # Main entry point with all functionality
 python main.py --agent random --episodes 100    # Run random agent
 python main.py --visualize                      # Analyze saved results
 python main.py --explore                        # Explore environment
+python main.py --analyze random --episodes 200  # Analyze state space (NEW!)
 python main.py --play realtime                  # Real-time A/D gameplay
 python main.py --play simple                    # Turn-based gameplay
 python main.py --quick                          # Interactive menu
 
-# Development commands
+# Development commands (with venv activated)
 ruff check --fix .                              # Lint and fix code
 pyright                                         # Type checking
+
+# Alternative: Use uv run (auto-activates)
+uv run python main.py --analyze random          # Auto-activates venv
 ```
 
 ## Algorithm Implementation Order
@@ -136,12 +144,15 @@ Following the TODO.md structure:
 
 ## Important Reminders
 - The user is on a Mac mini with fish shell
+- **CRITICAL**: ALWAYS use the project's virtual environment (`source .venv/bin/activate` or `uv run`)
+- **NEVER** work in wrong venv - check for warnings about mismatched VIRTUAL_ENV paths
 - The user wants to LEARN - explain concepts as we implement
 - Each task in TODO.md has a **Learning Goal** - make sure to address it
 - Visualizations are KEY - the user wants to see networks evolving
 - Work on one TODO item at a time unless asked otherwise
 - Interactive functionality needs real terminal (input issues in headless mode)
 - **Use subagents** for educational tasks - they maintain consistent beginner-friendly tone
+- **Environment Check**: If you see venv warnings, STOP and use correct activation method
 
 ## Baseline Performance
 - **Random Agent**: 23.3 ± 11.5 steps (0% success rate)

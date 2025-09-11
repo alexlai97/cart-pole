@@ -33,6 +33,26 @@ def run_rule_based_agent(episodes: int, render: bool) -> None:
     compare_with_random(results)
 
 
+def run_q_learning_agent(episodes: int, render: bool) -> None:
+    """Run the Q-learning agent."""
+    print("🧮 Running Q-Learning Agent...")
+    from agents.q_learning_agent import train_q_learning_agent
+
+    results = train_q_learning_agent(episodes=episodes, render=render)
+    
+    print(f"\n🎯 Q-Learning vs Baselines:")
+    print(f"   Random Agent:     23.3 ± 11.5 steps")
+    print(f"   Rule-Based Agent: 43.8 ±  8.7 steps")
+    print(f"   Q-Learning Agent: {results['mean_reward']:.1f} ± {results['std_reward']:.1f} steps")
+    
+    improvement_over_random = ((results['mean_reward'] - 23.3) / 23.3) * 100
+    improvement_over_rule = ((results['mean_reward'] - 43.8) / 43.8) * 100
+    
+    print(f"\n📈 Improvements:")
+    print(f"   vs Random:     {improvement_over_random:+.1f}%")
+    print(f"   vs Rule-Based: {improvement_over_rule:+.1f}%")
+
+
 def run_visualization(args: str = None) -> None:
     """Run visualization analysis with flexible options.
     
@@ -79,19 +99,45 @@ def run_interactive_play(play_mode: str) -> None:
         play_realtime()
 
 
+def run_state_analysis(agent_name: str = "random", episodes: int = 100) -> None:
+    """Run state space analysis."""
+    print(f"🔬 Running state analysis with {agent_name} agent...")
+    
+    if agent_name == "random":
+        from agents.random_agent import RandomAgent
+        import gymnasium as gym
+        env = gym.make("CartPole-v1")
+        agent = RandomAgent(env.action_space)
+        env.close()
+    elif agent_name == "rule_based":
+        from agents.rule_based_agent import RuleBasedAgent
+        import gymnasium as gym
+        env = gym.make("CartPole-v1")
+        agent = RuleBasedAgent(env.action_space)
+        env.close()
+    else:
+        print(f"❌ Unknown agent: {agent_name}")
+        return
+    
+    from utils.state_analyzer import analyze_environment
+    analyze_environment(agent, episodes)
+
+
 def run_quick_menu() -> None:
     """Run interactive quick menu for common actions."""
     while True:
         print("\n" + "🚀 Cart-Pole Quick Menu" + "\n" + "=" * 25)
         print("1. 🎮 Play real-time (A/D keys)")
         print("2. 🎲 Run random agent")
-        print("3. 🧠 Run rule-based agent")
-        print("4. 📊 View results")
-        print("5. 🔍 Explore environment")
-        print("6. 🎯 Play turn-based")
-        print("7. ❌ Exit")
+        print("3. 🧠 Run rule-based agent") 
+        print("4. 🧮 Run Q-learning agent")
+        print("5. 📊 View results")
+        print("6. 🔍 Explore environment")
+        print("7. 🔬 Analyze state space")
+        print("8. 🎯 Play turn-based")
+        print("9. ❌ Exit")
 
-        choice = input("\nChoose option (1-7): ").strip()
+        choice = input("\nChoose option (1-9): ").strip()
 
         if choice == '1':
             run_interactive_play("realtime")
@@ -100,16 +146,20 @@ def run_quick_menu() -> None:
         elif choice == '3':
             run_rule_based_agent(100, False)
         elif choice == '4':
-            run_visualization()
+            run_q_learning_agent(500, False)  # Fewer episodes for interactive use
         elif choice == '5':
+            run_visualization()
+        elif choice == '6':
             import os
 
             from utils.environment_explorer import explore_environment
             os.makedirs('outputs', exist_ok=True)
             explore_environment()
-        elif choice == '6':
-            run_interactive_play("simple")
         elif choice == '7':
+            run_state_analysis("random", 100)
+        elif choice == '8':
+            run_interactive_play("simple")
+        elif choice == '9':
             print("👋 Goodbye!")
             break
         else:
@@ -124,11 +174,13 @@ def main():
         epilog="""
 Examples:
   python main.py --agent random --episodes 100    # Run random agent
+  python main.py --agent q-learning --episodes 1000  # Train Q-learning
   python main.py --agent random --render          # Run with visualization  
   python main.py --visualize                      # Analyze all agents
   python main.py --visualize random              # Analyze specific agent
   python main.py --visualize random,rule_based   # Compare agents
   python main.py --explore                        # Explore environment
+  python main.py --analyze random --episodes 200  # Analyze state space
   python main.py --play simple                    # Play turn-based (think each move)
   python main.py --play realtime                  # Play real-time (A/D keys)
   python main.py --quick                          # Quick interactive menu
@@ -137,7 +189,7 @@ Examples:
 
     parser.add_argument(
         "--agent",
-        choices=["random", "rule-based"],
+        choices=["random", "rule-based", "q-learning"],
         help="Which agent to run",
     )
     parser.add_argument(
@@ -161,6 +213,11 @@ Examples:
         "--explore",
         action="store_true",
         help="Explore the Cart-Pole environment",
+    )
+    parser.add_argument(
+        "--analyze",
+        choices=["random", "rule_based"],
+        help="Analyze state space with specified agent",
     )
     parser.add_argument(
         "--play",
@@ -189,18 +246,24 @@ Examples:
         from utils.environment_explorer import explore_environment
         os.makedirs('outputs', exist_ok=True)
         explore_environment()
+    elif args.analyze:
+        run_state_analysis(args.analyze, args.episodes)
     elif args.play:
         run_interactive_play(args.play)
     elif args.agent == "random":
         run_random_agent(args.episodes, args.render)
     elif args.agent == "rule-based":
         run_rule_based_agent(args.episodes, args.render)
+    elif args.agent == "q-learning":
+        run_q_learning_agent(args.episodes, args.render)
     else:
         print("Please specify what to do:")
         print("  --agent random       # Run random agent")
         print("  --agent rule-based   # Run rule-based agent")
+        print("  --agent q-learning   # Run Q-learning agent")
         print("  --visualize          # Analyze results")
         print("  --explore            # Explore environment")
+        print("  --analyze random     # Analyze state space")
         print("  --play simple        # Play turn-based")
         print("  --play realtime      # Play real-time")
         print("  --quick              # Interactive menu")
