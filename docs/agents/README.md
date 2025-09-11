@@ -44,23 +44,27 @@ Unlike games with clear "good" and "bad" moves, Cart-Pole only tells you when yo
 ### 2. Rule-Based Agent 🧠
 **File**: `agents/rule_based_agent.py`  
 **Strategy**: Simple heuristic rules
-**Performance**: TBD (should beat random)
+**Performance**: ~44 steps average
 **Purpose**: Show value of domain knowledge
 
-### 3. Q-Learning Agent 🎯 *(Coming Soon)*
-**Strategy**: Learn state-action values
-**Purpose**: First true RL algorithm
+### 3. Q-Learning Agent 🎯
+**File**: `agents/q_learning_agent.py`
+**Strategy**: Learn state-action values with Q-tables
+**Performance**: ~28 steps average
+**Purpose**: First true RL algorithm - shows limitations
 
-### 4. Deep Q-Network (DQN) 🧠🔗 *(Coming Soon)*
-**Strategy**: Neural network Q-values
-**Purpose**: Handle continuous states
+### 4. Deep Q-Network (DQN) 🧠🔗
+**File**: `agents/dqn_agent.py`
+**Strategy**: Neural network Q-values with experience replay
+**Performance**: **~286 steps average (SOLVES Cart-Pole!)**
+**Purpose**: Revolutionary deep RL breakthrough
 
 ## Learning Path
 
-1. **Start Here**: Understand Random and Rule-Based agents
-2. **Next**: Learn Q-Learning fundamentals  
-3. **Then**: Deep learning with DQN
-4. **Advanced**: Policy gradient methods (REINFORCE, A2C, PPO)
+1. **Start Here**: Understand [Random](random-agent.md) and [Rule-Based](rule-based-agent.md) agents
+2. **Foundation**: Learn [Q-Learning](q-learning-agent.md) fundamentals and limitations  
+3. **Revolution**: Experience the [DQN](dqn-agent.md) breakthrough with neural networks
+4. **Advanced**: Policy gradient methods (REINFORCE, A2C, PPO) *(Coming Soon)*
 
 Each agent builds on concepts from the previous ones, so don't skip ahead!
 

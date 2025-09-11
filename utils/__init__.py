@@ -11,3 +11,4 @@ This package contains:
 """
 
 from .state_analyzer import StateCollector, analyze_environment
+from .experience_replay import ReplayBuffer, PrioritizedReplayBuffer, Experience
