@@ -29,6 +29,19 @@ def load_agent_results(results_file: str) -> dict[str, Any]:
             "type": data.get("agent_name", "unknown").lower()
         }
     
+    # Ensure all required statistics are present
+    if "episode_rewards" in data:
+        episode_rewards = data["episode_rewards"]
+        if "min_reward" not in data:
+            data["min_reward"] = float(min(episode_rewards))
+        if "max_reward" not in data:
+            data["max_reward"] = float(max(episode_rewards))
+        if "mean_reward" not in data:
+            data["mean_reward"] = float(sum(episode_rewards) / len(episode_rewards))
+        if "std_reward" not in data:
+            import numpy as np
+            data["std_reward"] = float(np.std(episode_rewards))
+    
     return data
 
 

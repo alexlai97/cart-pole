@@ -31,6 +31,9 @@ dev = [
     { name = "pyright" },
     { name = "ruff" },
 ]
+play = [
+    { name = "pygame" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -38,12 +41,13 @@ requires-dist = [
     { name = "matplotlib" },
     { name = "numpy" },
     { name = "pre-commit", marker = "extra == 'dev'" },
+    { name = "pygame", marker = "extra == 'play'" },
     { name = "pyright", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "tensorboard", marker = "extra == 'deep'" },
-    { name = "torch", marker = "extra == 'deep'" },
+    { name = "torch", marker = "extra == 'deep'", specifier = ">=2.0.0" },
 ]
-provides-extras = ["dev", "deep"]
+provides-extras = ["dev", "deep", "play"]
 
 [[package]]
 name = "cfgv"
