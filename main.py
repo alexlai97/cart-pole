@@ -40,17 +40,61 @@ def run_q_learning_agent(episodes: int, render: bool) -> None:
 
     results = train_q_learning_agent(episodes=episodes, render=render)
     
-    print(f"\n🎯 Q-Learning vs Baselines:")
-    print(f"   Random Agent:     23.3 ± 11.5 steps")
-    print(f"   Rule-Based Agent: 43.8 ±  8.7 steps")
-    print(f"   Q-Learning Agent: {results['mean_reward']:.1f} ± {results['std_reward']:.1f} steps")
+    from utils.constants import format_baseline_comparison, calculate_improvement
     
-    improvement_over_random = ((results['mean_reward'] - 23.3) / 23.3) * 100
-    improvement_over_rule = ((results['mean_reward'] - 43.8) / 43.8) * 100
+    print(format_baseline_comparison('q_learning', results['mean_reward'], results['std_reward']))
+    
+    improvement_over_random = calculate_improvement(results['mean_reward'], 'random')
+    improvement_over_rule = calculate_improvement(results['mean_reward'], 'rule_based')
     
     print(f"\n📈 Improvements:")
     print(f"   vs Random:     {improvement_over_random:+.1f}%")
     print(f"   vs Rule-Based: {improvement_over_rule:+.1f}%")
+
+
+def run_dqn_agent(episodes: int, render: bool, visualize_network: bool = False, force_mps: bool = False) -> None:
+    """Run the Deep Q-Network agent."""
+    print("🧠 Running Deep Q-Network (DQN) Agent...")
+    from agents.dqn_agent import train_dqn_agent
+
+    # Device selection
+    device = None
+    if force_mps:
+        device = "mps"
+        print("🍎 Forcing Apple MPS (Metal) usage for experimental GPU training")
+    
+    results = train_dqn_agent(episodes=episodes, render=render, visualize=visualize_network, device=device)
+    
+    # Show performance comparison
+    print(f"\n🎯 DQN vs All Baselines:")
+    print(f"   Random Agent:     23.3 ± 11.5 steps")
+    print(f"   Rule-Based Agent: 43.8 ±  8.7 steps")
+    print(f"   Q-Learning Agent: 28.5 ± 12.8 steps")
+    print(f"   DQN Agent:       {results['mean_reward']:5.1f} ± {results['std_reward']:5.1f} steps")
+    
+    improvement_over_random = ((results['mean_reward'] - 23.3) / 23.3) * 100
+    improvement_over_rule = ((results['mean_reward'] - 43.8) / 43.8) * 100  
+    improvement_over_qlearning = ((results['mean_reward'] - 28.5) / 28.5) * 100
+    
+    print(f"\n📈 Improvements:")
+    print(f"   vs Random:     {improvement_over_random:+.1f}%")
+    print(f"   vs Rule-Based: {improvement_over_rule:+.1f}%")
+    print(f"   vs Q-Learning: {improvement_over_qlearning:+.1f}%")
+    
+    if results['solved']:
+        print(f"🎉 CART-POLE SOLVED! Average ≥195 steps achieved!")
+    else:
+        print(f"🎯 Target: 195 steps average to solve Cart-Pole")
+
+
+def run_dqn_demo(episodes: int = 5) -> None:
+    """Demo a trained DQN model."""
+    print("🎮 Running DQN Demo with Trained Model...")
+    from agents.dqn_agent import demo_trained_dqn
+    
+    demo_trained_dqn(episodes=episodes, render=True)
+
+
 
 
 def run_visualization(args: str = None) -> None:
@@ -131,13 +175,16 @@ def run_quick_menu() -> None:
         print("2. 🎲 Run random agent")
         print("3. 🧠 Run rule-based agent") 
         print("4. 🧮 Run Q-learning agent")
-        print("5. 📊 View results")
-        print("6. 🔍 Explore environment")
-        print("7. 🔬 Analyze state space")
-        print("8. 🎯 Play turn-based")
-        print("9. ❌ Exit")
+        print("5. 🤖 Run DQN agent")
+        print("6. 🎨 DQN with neural network viz")
+        print("7. 🎮 Demo trained DQN model")
+        print("8. 📊 View results")
+        print("9. 🔍 Explore environment")
+        print("10. 🔬 Analyze state space")
+        print("11. 🎯 Play turn-based")
+        print("12. ❌ Exit")
 
-        choice = input("\nChoose option (1-9): ").strip()
+        choice = input("\nChoose option (1-12): ").strip()
 
         if choice == '1':
             run_interactive_play("realtime")
@@ -148,18 +195,24 @@ def run_quick_menu() -> None:
         elif choice == '4':
             run_q_learning_agent(500, False)  # Fewer episodes for interactive use
         elif choice == '5':
-            run_visualization()
+            run_dqn_agent(300, False)  # DQN should solve in ~300 episodes
         elif choice == '6':
+            run_dqn_agent(300, False, True)  # DQN with neural network visualization
+        elif choice == '7':
+            run_dqn_demo(5)  # Demo trained DQN model
+        elif choice == '8':
+            run_visualization()
+        elif choice == '9':
             import os
 
             from utils.environment_explorer import explore_environment
             os.makedirs('outputs', exist_ok=True)
             explore_environment()
-        elif choice == '7':
+        elif choice == '10':
             run_state_analysis("random", 100)
-        elif choice == '8':
+        elif choice == '11':
             run_interactive_play("simple")
-        elif choice == '9':
+        elif choice == '12':
             print("👋 Goodbye!")
             break
         else:
@@ -173,23 +226,27 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python main.py --agent random --episodes 100    # Run random agent
-  python main.py --agent q-learning --episodes 1000  # Train Q-learning
-  python main.py --agent random --render          # Run with visualization  
-  python main.py --visualize                      # Analyze all agents
-  python main.py --visualize random              # Analyze specific agent
-  python main.py --visualize random,rule_based   # Compare agents
-  python main.py --explore                        # Explore environment
-  python main.py --analyze random --episodes 200  # Analyze state space
-  python main.py --play simple                    # Play turn-based (think each move)
-  python main.py --play realtime                  # Play real-time (A/D keys)
-  python main.py --quick                          # Quick interactive menu
+  python main.py --agent random --episodes 100         # Run random agent
+  python main.py --agent q_learning --episodes 1000    # Train Q-learning
+  python main.py --agent dqn --episodes 500            # Train DQN (should solve!)
+  python main.py --agent dqn --network-viz --episodes 300  # DQN with live neural viz!
+  python main.py --demo                                # Demo trained DQN (5 episodes)
+  python main.py --demo 10                             # Demo trained DQN (10 episodes)
+  python main.py --agent random --render               # Run with environment rendering
+  python main.py --visualize                           # Analyze all agents
+  python main.py --visualize random                    # Analyze specific agent
+  python main.py --visualize random,rule_based         # Compare agents
+  python main.py --explore                             # Explore environment
+  python main.py --analyze random --episodes 200       # Analyze state space
+  python main.py --play simple                         # Play turn-based (think each move)
+  python main.py --play realtime                       # Play real-time (A/D keys)
+  python main.py --quick                               # Quick interactive menu
         """
     )
 
     parser.add_argument(
         "--agent",
-        choices=["random", "rule-based", "q-learning"],
+        choices=["random", "rule_based", "q_learning", "dqn"],
         help="Which agent to run",
     )
     parser.add_argument(
@@ -204,6 +261,11 @@ Examples:
         help="Render the environment during episodes",
     )
     parser.add_argument(
+        "--network-viz",
+        action="store_true",
+        help="Show real-time neural network visualization (works with DQN, future: REINFORCE, A2C, PPO)",
+    )
+    parser.add_argument(
         "--visualize",
         nargs="?",
         const="all",
@@ -216,7 +278,7 @@ Examples:
     )
     parser.add_argument(
         "--analyze",
-        choices=["random", "rule_based"],
+        choices=["random", "rule_based", "q_learning", "dqn"],
         help="Analyze state space with specified agent",
     )
     parser.add_argument(
@@ -229,6 +291,18 @@ Examples:
         action="store_true",
         help="Quick menu for common actions",
     )
+    parser.add_argument(
+        "--demo",
+        type=int,
+        nargs="?",
+        const=5,
+        help="Demo trained DQN model (default: 5 episodes)",
+    )
+    parser.add_argument(
+        "--force-mps",
+        action="store_true",
+        help="Force use of Apple MPS (Metal) for DQN training (experimental)",
+    )
 
     args = parser.parse_args()
 
@@ -237,6 +311,8 @@ Examples:
 
     if args.quick:
         run_quick_menu()
+    elif args.demo is not None:
+        run_dqn_demo(args.demo)
     elif args.visualize is not None:
         run_visualization(args.visualize)
     elif args.explore:
@@ -252,15 +328,18 @@ Examples:
         run_interactive_play(args.play)
     elif args.agent == "random":
         run_random_agent(args.episodes, args.render)
-    elif args.agent == "rule-based":
+    elif args.agent == "rule_based":
         run_rule_based_agent(args.episodes, args.render)
-    elif args.agent == "q-learning":
+    elif args.agent == "q_learning":
         run_q_learning_agent(args.episodes, args.render)
+    elif args.agent == "dqn":
+        run_dqn_agent(args.episodes, args.render, args.network_viz, args.force_mps)
     else:
         print("Please specify what to do:")
         print("  --agent random       # Run random agent")
-        print("  --agent rule-based   # Run rule-based agent")
-        print("  --agent q-learning   # Run Q-learning agent")
+        print("  --agent rule_based   # Run rule-based agent")
+        print("  --agent q_learning   # Run Q-learning agent")
+        print("  --agent dqn          # Run DQN agent")
         print("  --visualize          # Analyze results")
         print("  --explore            # Explore environment")
         print("  --analyze random     # Analyze state space")

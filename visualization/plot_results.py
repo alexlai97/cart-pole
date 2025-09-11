@@ -14,9 +14,22 @@ import numpy as np
 
 
 def load_agent_results(results_file: str) -> dict[str, Any]:
-    """Load agent results from JSON file."""
+    """Load agent results from JSON file, handling different schemas."""
     with open(results_file) as f:
-        return json.load(f)
+        data = json.load(f)
+    
+    # Handle different result file schemas
+    if "agent" not in data:
+        # Legacy or DQN flat schema - synthesize agent info
+        agent_name = "DQN Agent" if "agent_name" in data and data["agent_name"] == "DQN" else "Unknown Agent"
+        
+        # Wrap in standard schema
+        data["agent"] = {
+            "name": agent_name,
+            "type": data.get("agent_name", "unknown").lower()
+        }
+    
+    return data
 
 
 def plot_episode_rewards(results: dict[str, Any], save_path: str = None) -> None:
@@ -212,10 +225,21 @@ def analyze_agent(agent_name: str) -> bool:
     """
     print(f"📊 Analyzing {agent_name.title().replace('_', ' ')} Agent Performance...")
 
-    results_file = f"outputs/results/{agent_name}_results.json"
+    # Try multiple filename patterns for backward compatibility
+    possible_files = [
+        f"outputs/results/{agent_name}_results.json",
+        f"outputs/results/{agent_name}_agent_results.json"
+    ]
+    
+    results_file = None
+    for file_path in possible_files:
+        if Path(file_path).exists():
+            results_file = file_path
+            break
 
-    if not Path(results_file).exists():
-        print(f"❌ Results file not found: {results_file}")
+    if results_file is None:
+        print(f"❌ Results file not found for agent '{agent_name}'")
+        print(f"Looked for: {', '.join(possible_files)}")
         print(f"Run the {agent_name} agent first to generate results.")
         return False
 

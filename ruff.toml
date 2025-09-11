@@ -1,6 +1,6 @@
 # Ruff configuration for Cart-Pole RL project
 line-length = 88
-target-version = "py310"
+target-version = "py313"
 
 [lint]
 select = [

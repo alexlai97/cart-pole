@@ -25,34 +25,15 @@ dev = [
     "pre-commit",
 ]
 deep = [
-    "torch",
+    "torch>=2.0.0",
     "tensorboard",
 ]
-
-[tool.ruff]
-line-length = 88
-target-version = "py313"
-
-[tool.ruff.lint]
-select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "C4", # flake8-comprehensions
-    "UP", # pyupgrade
+play = [
+    "pygame",
 ]
-ignore = [
-    "E501", # line too long, handled by formatter
-]
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
 
 [tool.pyright]
-include = ["cart_pole", "agents", "visualization", "utils"]
+include = ["agents", "visualization", "utils"]
 exclude = [".venv"]
 reportMissingImports = true
 reportMissingTypeStubs = false
